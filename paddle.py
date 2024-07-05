@@ -17,15 +17,12 @@ class Paddle(Turtle):
         self.color("white")
         self.shape("square")
         self.penup()
-        self.shapesize(stretch_wid=1, stretch_len=3)
+        self.shapesize(stretch_wid=5, stretch_len=1)
         self.goto(x_pos, y_pos)
-        self.setheading(UP)
 
     def move_up(self):
-        self.setheading(UP)
-        self.forward(MOVE_DISTANCE)
+        self.goto(self.xcor(), self.ycor() + MOVE_DISTANCE)
 
     def move_down(self):
-        self.setheading(DOWN)
-        self.forward(MOVE_DISTANCE)
+        self.goto(self.xcor(), self.ycor() - MOVE_DISTANCE)
 

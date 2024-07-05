@@ -1,5 +1,7 @@
 from turtle import Turtle, Screen
 import paddle
+import ball
+import time
 
 # SCREEN (START)
 # screen constants
@@ -46,18 +48,44 @@ COMPUTER_XCOR = int(SCREEN_WIDTH/2) - 40
 paint_line()
 
 # set up player
-player = paddle.Paddle(PLAYER_XCOR, 0)
-computer = paddle.Paddle(COMPUTER_XCOR, 0)
+player_1 = paddle.Paddle(PLAYER_XCOR, 0)
+player_2 = paddle.Paddle(COMPUTER_XCOR, 0)
+ball = ball.Ball(SCREEN_HEIGHT)
 
 # player controls
-scr.onkey(player.move_up, "Up")
-scr.onkey(player.move_down, "Down")
+scr.onkey(player_1.move_up, "w")
+scr.onkey(player_1.move_down, "s")
+scr.onkey(player_2.move_up, "Up")
+scr.onkey(player_2.move_down, "Down")
 
 game_over = False
 
 while not game_over:
+    time.sleep(0.07)
     scr.update()
 
+    if ball.distance(ball.xcor(), SCREEN_HEIGHT/2 - 10) < 10 or ball.distance(ball.xcor(), -SCREEN_HEIGHT/2 + 10) < 15:
+        ball.bounce_y()
+    elif ball.xcor() + 10 > player_2.xcor():
+        print("point player 1")
+        ball.bounce_x()
+        ball.serve(SCREEN_HEIGHT)
+    elif ball.xcor() - 10 < player_1.xcor():
+        print("point player 2")
+        ball.bounce_x()
+        ball.serve(SCREEN_HEIGHT)
+    elif ball.xcor() + 10 == player_2.xcor() - 10 \
+            and ball.ycor() + 10 > player_2.ycor() - 50 \
+            and ball.ycor() - 10 < player_2.ycor() + 50 \
+            or ball.xcor() - 10 == player_1.xcor() + 10 \
+            and ball.ycor() + 10 > player_1.ycor() - 50 \
+            and ball.ycor() - 10 < player_1.ycor() + 50 :
+        ball.bounce_x()
+
+    ball.move()
+
+
+    print(f"{ball.xcor()}, {ball.ycor()}: | {SCREEN_HEIGHT/2 -30}")
 # prevent premature closing of screen
 scr.exitonclick()
 
