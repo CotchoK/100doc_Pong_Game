@@ -2,6 +2,7 @@ from turtle import Turtle, Screen
 import paddle
 import ball
 import time
+import scoreboard
 
 # SCREEN (START)
 # screen constants
@@ -51,6 +52,7 @@ paint_line()
 player_1 = paddle.Paddle(PLAYER_XCOR, 0)
 player_2 = paddle.Paddle(COMPUTER_XCOR, 0)
 ball = ball.Ball(SCREEN_HEIGHT)
+scoreboard = scoreboard.Scoreboard()
 
 # player controls
 scr.onkey(player_1.move_up, "w")
@@ -61,31 +63,40 @@ scr.onkey(player_2.move_down, "Down")
 game_over = False
 
 while not game_over:
-    time.sleep(0.07)
+    time.sleep(ball.move_speed)
     scr.update()
 
+    # Detect collision with top or bottom of screen
     if ball.distance(ball.xcor(), SCREEN_HEIGHT/2 - 10) < 10 or ball.distance(ball.xcor(), -SCREEN_HEIGHT/2 + 10) < 15:
         ball.bounce_y()
-    elif ball.xcor() + 10 > player_2.xcor():
-        print("point player 1")
+
+    # Detect miss with player_1 (left paddle)
+    if ball.xcor() - 10 < -SCREEN_WIDTH/2 + 10 :
+        scoreboard.update_score(2)
         ball.bounce_x()
-        ball.serve(SCREEN_HEIGHT)
-    elif ball.xcor() - 10 < player_1.xcor():
-        print("point player 2")
+        ball.serve()
+
+    # Detect miss with player_2 (right paddle)
+    if ball.xcor() + 10 > SCREEN_WIDTH/2 - 10:
+        scoreboard.update_score(1)
         ball.bounce_x()
-        ball.serve(SCREEN_HEIGHT)
-    elif ball.xcor() + 10 == player_2.xcor() - 10 \
-            and ball.ycor() + 10 > player_2.ycor() - 50 \
-            and ball.ycor() - 10 < player_2.ycor() + 50 \
-            or ball.xcor() - 10 == player_1.xcor() + 10 \
-            and ball.ycor() + 10 > player_1.ycor() - 50 \
-            and ball.ycor() - 10 < player_1.ycor() + 50 :
-        ball.bounce_x()
+        ball.serve()
+
+    # Detect collision with either player 1 or player 2 paddles
+    if abs(int(ball.xcor()/10*10) - player_2.xcor()) < 20 \
+        and ball.ycor() - 10 < player_2.ycor() + 50 \
+        and ball.ycor() + 10 > player_2.ycor() - 50:
+            ball.bounce_x()
+
+    if abs(int(ball.xcor()/10*10) - player_1.xcor()) < 20 \
+        and ball.ycor() - 10 < player_1.ycor() + 50 \
+        and ball.ycor() + 10 > player_1.ycor() - 50:
+            ball.bounce_x()
 
     ball.move()
 
 
-    print(f"{ball.xcor()}, {ball.ycor()}: | {SCREEN_HEIGHT/2 -30}")
+    print(f"speed:{ball.move_speed}")
 # prevent premature closing of screen
 scr.exitonclick()
 
